@@ -18,4 +18,10 @@ router.post('/update/offer/', asyncMiddleware(async (req, res) => {
     res.success();
 }));
 
+router.get('/allOffers', asyncMiddleware(async (req, res, next) => {
+    const offers = await Offer.find();
+
+    res.success('', offers);
+}));
+
 module.exports = router;

@@ -1,7 +1,8 @@
 const jwt = require('jsonwebtoken');
 const JWT_SECRET = process.env.JWT_SECRET;
+const User = require('../models/user');
 
-module.exports = (req, res, next) => {
+module.exports = async (req, res, next) => {
     try {
         const token = req.cookies.token;
 
@@ -9,7 +10,15 @@ module.exports = (req, res, next) => {
             return res.unauthorized();
         }
 
-        req.user = jwt.verify(token, JWT_SECRET);
+        const decoded = jwt.verify(token, JWT_SECRET);
+        const user = await User.findOne({username: decoded.username}).lean();
+
+        if (!user) {
+            res.clearCookie('token');
+            return res.badRequest('User does not exist');
+        }
+
+        req.user = decoded;
         next();
     } catch (err) {
         console.log(err);

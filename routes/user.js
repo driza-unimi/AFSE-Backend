@@ -4,6 +4,51 @@ const User = require('../models/user');
 const Offer = require('../models/offer');
 const Hero = require('../models/hero');
 const asyncMiddleware = require('../middlewares/asyncMiddleware');
+const bcrypt = require("bcryptjs");
+
+router.get('/', asyncMiddleware(async (req, res, next) => {
+    const username = req.user.username;
+    const user = await User.findOne({username});
+    const {_id, password, ...data} = user.toObject();
+
+    res.success('', data);
+}))
+
+router.put('/', asyncMiddleware(async (req, res, next) => {
+    const { username, role } = req.user;
+
+    if (role === 'admin') return res.badRequest('Cannot edit admin user');
+
+    const user = await User.findOne({username});
+    const {email, newPassword} = req.body;
+
+    if (email) {
+        user.email = email;
+    }
+    if (newPassword) {
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
+        user.password = hashedPassword
+    }
+
+    if (newPassword || email) await user.save();
+
+    const {_id, password, ...data} = user.toObject();
+
+    res.success('', data);
+}))
+
+router.delete('/', asyncMiddleware(async (req, res, next) => {
+    const { username, role } = req.user;
+
+    if (role === 'admin') return res.badRequest('Cannot delete admin user');
+
+    await User.deleteOne({username})
+    res.clearCookie('token');
+
+    res.success();
+}))
+
 
 router.get('/offers', asyncMiddleware(async (req, res, next) => {
     const offers = await Offer.find({valid: true});
@@ -25,30 +70,32 @@ router.post('/buy', asyncMiddleware(async (req, res, next) => {
         user.credit += offer.value;
         await user.save();
     } else if (offer.type === 'pack') {
-        if (user.credit < offer.cost) return res.badRequest('Not enough credit');
+        if (user.credit < offer.cost && user.role !== 'admin') return res.badRequest('Not enough credit');
 
         let matchCondition = {};
         if (offer.name === 'Elite Card Pack') {
-            matchCondition.rarity = { $ne: 'common' };
+            matchCondition.rarity = {$ne: 'common'};
         } else if (offer.name === 'Legendary Pack') {
             matchCondition.rarity = 'legendary';
         }
 
         const randomCards = await Hero.aggregate([
-            { $match: matchCondition },
-            { $sample: { size: offer.value } }
+            {$match: matchCondition},
+            {$sample: {size: offer.value}}
         ]);
 
-        for (hero of randomCards) {
-            const existingHero = user.cards.find(c => c._id.equals(hero._id));
+        for (let hero of randomCards) {
+            hero.count = 0;
+            const existingHero = user.cards.find(c => c._id === hero._id);
             if (existingHero) {
-                existingHero.count = (existingHero.count || 0) + 1;
-            } else {
-                user.cards.push(hero);
+                hero.count = existingHero.count + 1;
             }
+            user.cards.push(hero);
         }
 
-        user.save();
+        user.credit -= offer.cost;
+        await user.save();
+        return res.success('', randomCards);
     }
 
     res.success();

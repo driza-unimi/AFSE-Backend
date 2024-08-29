@@ -49,8 +49,7 @@ router.post('/login', asyncMiddleware(async (req, res) => {
 }));
 
 router.post('/logout', asyncMiddleware(async (req, res) => {
-    res.cookie('token', '', {maxAge: 0})
-
+    res.clearCookie('token');
     res.success('Logout successful');
 }));
 
