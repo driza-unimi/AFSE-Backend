@@ -24,10 +24,7 @@ if (!MONGO_URI) {
     process.exit(1);
 }
 
-mongoose.connect(MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-})
+mongoose.connect(MONGO_URI)
     .then(() => console.log('Connected to MongoDB'))
     .catch(err => {
         console.error('MongoDB connection error:', err);
@@ -56,7 +53,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 app.use(cookieParser());
 app.use(cors({
     credentials: true,
-    origin: ['http://localhost:3000', 'http://localhost:8080', 'http://localhost:4200'],
+    origin: true, //['http://localhost:3000', 'http://localhost:8080', 'http://localhost:4200', 'http://localhost:5173']
 }));
 
 app.use(responseExtensions);

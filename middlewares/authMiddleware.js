@@ -7,6 +7,7 @@ module.exports = async (req, res, next) => {
         const token = req.cookies.token;
 
         if (!token) {
+            console.error('You do not have permission to access this page.', req.user);
             return res.unauthorized();
         }
 
