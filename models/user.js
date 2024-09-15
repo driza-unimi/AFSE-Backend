@@ -29,11 +29,16 @@ const userSchema = new mongoose.Schema({
         type: Number,
         default: 0,
     },
-    cards: {
-        type: Array,
-        default: [],
-    }
-
+    cards: [{
+        card: {
+            type: String,
+            ref: 'Hero'
+        },
+        count: {
+            type: Number,
+            default: 1
+        }
+    }]
 });
 
 module.exports = mongoose.model('User', userSchema);

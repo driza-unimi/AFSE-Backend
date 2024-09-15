@@ -19,7 +19,7 @@ module.exports = async () => {
             .digest('hex');
 
         let offset = await Hero.estimatedDocumentCount();
-        let totalHeroesFetched = 0;
+        let totalHeroesFetched = offset;
         const limit = 20;
 
         while (true) {
@@ -41,7 +41,10 @@ module.exports = async () => {
                     name: hero.name,
                     image: `${hero.thumbnail.path}/portrait_uncanny.${hero.thumbnail.extension}`,
                     description: hero.description || 'No description available.',
-                    rarity: getHeroRarity(totalHeroesFetched)
+                    rarity: getHeroRarity(totalHeroesFetched),
+                    series: hero.series.items,
+                    events: hero.events.items,
+                    comics: hero.comics.items,
                 });
                 await newHero.save();
                 totalHeroesFetched++;

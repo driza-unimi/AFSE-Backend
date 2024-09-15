@@ -20,6 +20,18 @@ const heroSchema = new mongoose.Schema({
         enum: ['legendary', 'epic', 'rare', 'common'],
         default: 'common'
     },
+    series: {
+        type: Array,
+        default: [],
+    },
+    events: {
+        type: Array,
+        default: [],
+    },
+    comics: {
+        type: Array,
+        default: [],
+    }
 });
 
 module.exports = mongoose.model('Hero', heroSchema);
