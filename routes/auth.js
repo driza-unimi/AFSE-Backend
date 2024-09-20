@@ -8,11 +8,23 @@ const asyncMiddleware = require('../middlewares/asyncMiddleware');
 const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRE_TIME_IN_SECONDS = Number(process.env.JWT_EXPIRE_TIME_IN_SECONDS);
 
+const emailRegex = /^(?!\.)[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/;
+const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
 router.post('/signup', asyncMiddleware(async (req, res) => {
     const {username, email, password} = req.body;
 
     if (!username || !email || !password) {
         return res.badRequest('All fields are required');
+    }
+    if (username.length < 4) {
+        return res.badRequest('Username must be at least 4 characters long');
+    }
+    if (!emailRegex.test(email)) {
+        return res.badRequest('Email must be valid');
+    }
+    if (!passwordRegex.test(password)) {
+        return res.badRequest('Password must be at least 8 characters long, with one uppercase, one lowercase, one number, and one special character');
     }
 
     const existingUser = await User.findOne({

@@ -8,7 +8,7 @@ module.exports = async () => {
             console.log('Admin user already exists');
             return;
         }
-        const hashedPassword = await bcrypt.hash('admin', 10);
+        const hashedPassword = await bcrypt.hash('#Admin123', 10);
 
         const adminUser = new User({
             username: 'admin',
