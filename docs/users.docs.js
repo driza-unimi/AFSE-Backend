@@ -298,3 +298,135 @@
  *                   type: string
  *                   example: "Unauthorized access"
  */
+
+/**
+ * @swagger
+ * /api/v1/user/duplicates:
+ *   get:
+ *     summary: Get user's duplicated cards
+ *     description: Retrieves a list of cards that the authenticated user has more than one copy of.
+ *     security:
+ *       - bearerAuth: []
+ *     tags:
+ *       - User
+ *     responses:
+ *       200:
+ *         description: A list of duplicated cards owned by the user.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: ""
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       card:
+ *                         type: object
+ *                       count:
+ *                         type: integer
+ *                         description: The number of duplicates of the card.
+ *       400:
+ *         description: Bad request. User not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "User not found"
+ *       401:
+ *         description: Unauthorized. User is not authenticated.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Unauthorized access"
+ */
+
+
+/**
+ * @swagger
+ * /api/v1/user/trades:
+ *   get:
+ *     summary: Get user's trade offers
+ *     description: Retrieves the trade offers made by the authenticated user, including details of the card and offers from other users.
+ *     security:
+ *       - bearerAuth: []
+ *     tags:
+ *       - User
+ *     responses:
+ *       200:
+ *         description: A list of trade offers made by the user.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: ""
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     seller:
+ *                       type: string
+ *                       description: The ID of the user who made the offer.
+ *                     card:
+ *                       type: object
+ *                     offers:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           buyer:
+ *                             type: object
+ *                           cards:
+ *                             type: array
+ *       400:
+ *         description: Bad request. User not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "User not found"
+ *       401:
+ *         description: Unauthorized. User is not authenticated.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Unauthorized access"
+ */

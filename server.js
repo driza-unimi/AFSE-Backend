@@ -14,6 +14,7 @@ const errorHandler = require("./middlewares/errorHandler");
 
 const authRoute = require('./routes/auth');
 const userRoute = require('./routes/user');
+const tradeRoute = require('./routes/trade');
 const adminRoute = require('./routes/admin');
 
 const PORT = process.env.PORT || 3000;
@@ -69,6 +70,7 @@ app.use('/api/v1', authRoute);
 
 app.use(authMiddleware);
 app.use('/api/v1/user', userRoute);
+app.use('/api/v1/trade', tradeRoute);
 
 app.use(authorizeAdmin);
 app.use('/api/v1/admin', adminRoute);

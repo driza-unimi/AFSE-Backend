@@ -3,6 +3,7 @@ const router = express.Router();
 const User = require('../models/user');
 const Offer = require('../models/offer');
 const Hero = require('../models/hero');
+const Trade = require('../models/trade');
 const asyncMiddleware = require('../middlewares/asyncMiddleware');
 const bcrypt = require("bcryptjs");
 
@@ -117,6 +118,40 @@ router.post('/buy', asyncMiddleware(async (req, res, next) => {
 
   res.success();
 }));
+
+
+router.get('/duplicates', asyncMiddleware(async (req, res) => {
+  const username = req.user.username;
+  const user = await User.findOne({ username }).populate('cards.card');
+  if (!user) return res.badRequest('User not found');
+
+  const duplicatedCards = user.cards
+    .filter(card => card.count > 1)
+    .map(card => ({
+      card: card.card,
+      count: card.count
+    }));
+
+  res.success('', duplicatedCards);
+}));
+
+
+router.get('/trades', asyncMiddleware(async (req, res) => {
+  const username = req.user.username;
+
+  const user = await User.findOne({ username });
+  if (!user) return res.badRequest('User not found');
+
+  const userOffers = await Trade.find({ seller: user._id })
+    .populate([
+      { path: 'card' },
+      { path: 'offers.buyer', select: 'username' },
+      { path: 'offers.cards' },
+    ]);
+
+  res.success('', userOffers);
+}));
+
 
 
 module.exports = router;
